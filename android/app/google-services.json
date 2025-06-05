@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "147541308359",
+    "project_id": "spyapp-19318",
+    "storage_bucket": "spyapp-19318.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:147541308359:android:036126e29d56e3cd681fe2",
+        "android_client_info": {
+          "package_name": "com.anjesh.spy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "147541308359-dg3ll5q3oh8d7e6us46373p9hnfoefir.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQc-tTy3Q_eBuspLpgwluaVmyh2L7fHDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "147541308359-dg3ll5q3oh8d7e6us46373p9hnfoefir.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
