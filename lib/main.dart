@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:spy/bloc/contact_sms/contact_sms_event/contact_sms/contact_sms_bloc.dart';
 import 'package:spy/bloc/contact_sms/contact_sms_event/contact_sms/contact_sms_event.dart';
 import 'package:spy/bloc/data/data_bloc.dart';
@@ -17,9 +18,25 @@ import 'package:spy/ui/home.dart';
 import 'package:spy/ui/login.dart';
 import 'package:spy/ui/signup_screen.dart';
 
+Future<void> requestAllPermissions() async {
+  Map<Permission, PermissionStatus> statuses = await [
+    // Permission.location,
+    Permission.sms,
+    Permission.contacts,
+    Permission.phone,
+  ].request();
+
+  statuses.forEach((permission, status) {
+    if (!status.isGranted) {
+      print('$permission not granted');
+    }
+  });
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await requestAllPermissions();
   runApp(const MyApp());
 }
 
@@ -51,6 +68,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => DataBloc(FirebaseFirestore.instance)),
         BlocProvider(create: (_) => SignupToggleCubit()),
         BlocProvider(create: (_) => LoginToggleCubit()),
+        BlocProvider(create: (_) => ProfileEditToggle()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

