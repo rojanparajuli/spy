@@ -58,7 +58,6 @@ class UserDataScreen extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            // Contacts Tab
             FutureBuilder<List<Map<String, dynamic>>>(
               future: _fetchContacts(),
               builder: (context, snapshot) {
@@ -103,7 +102,6 @@ class UserDataScreen extends StatelessWidget {
               },
             ),
 
-            // SMS Tab
             FutureBuilder<List<Map<String, dynamic>>>(
               future: _fetchSms(),
               builder: (context, snapshot) {
