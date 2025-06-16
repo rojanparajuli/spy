@@ -18,23 +18,39 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final searchController = TextEditingController();
+    final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
 
+  Future<void> _handleRefresh() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      context.read<UserBloc>().add(LoadUserProfile(user.uid));
+      context.read<ContactSmsBloc>().add(LoadContactAndSms(user.uid));
+    }
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: Text(
-            "User not logged in",
-            style: TextStyle(color: Colors.white),
+      return RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _handleRefresh,
+        color: Colors.deepPurpleAccent,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: const Center(
+              child: Text(
+                "User not logged in",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
           ),
         ),
       );
     }
-
     return UserProfile(searchController: searchController);
   }
 }
@@ -50,6 +66,14 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   final nameController = TextEditingController();
   final genderController = TextEditingController();
+  final List<String> genderOptions = [
+    'Male',
+    'Female',
+    'Other',
+    'Prefer not to say',
+  ];
+
+  String? selectedGender;
 
   @override
   void initState() {
@@ -207,11 +231,52 @@ class _UserProfileState extends State<UserProfile> {
                             icon: Icons.person,
                           ),
                           const SizedBox(height: 12),
-                          _buildEditableField(
-                            controller: genderController,
-                            label: 'Gender',
-                            icon: Icons.transgender,
-                          ),
+                          BlocBuilder<ProfileEditToggle, bool>(
+                              builder: (context, isEditing) {
+                                return BlocBuilder<GenderCubit, String>(
+                                  builder: (context, gender) {
+                                    return DropdownButtonFormField<String>(
+                                      value: gender.isEmpty ? null : gender,
+                                      decoration: InputDecoration(
+                                        labelText: 'Gender',
+                                        labelStyle: TextStyle(color: Colors.grey[400]),
+                                        prefixIcon: Icon(Icons.transgender, color: Colors.grey[400]),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.grey),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.grey),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.white),
+                                        ),
+                                        filled: true,
+                                        fillColor: isEditing ? Colors.grey[800] : Colors.grey[900],
+                                      ),
+                                      dropdownColor: Colors.grey[900],
+                                      style: TextStyle(color: Colors.white),
+                                      icon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
+                                      items: genderOptions.map((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                      onChanged: isEditing
+                                          ? (String? newValue) {
+                                              if (newValue != null) {
+                                                context.read<GenderCubit>().setGender(newValue);
+                                              }
+                                            }
+                                          : null,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                           const SizedBox(height: 16),
                           BlocBuilder<ProfileEditToggle, bool>(
                             builder: (context, isEditing) {
@@ -421,4 +486,12 @@ class ProfileEditToggle extends Cubit<bool> {
   ProfileEditToggle() : super(false);
 
   void toggle() => emit(!state);
+}
+
+class GenderCubit extends Cubit<String> {
+  GenderCubit() : super('');
+
+  void setGender(String gender) {
+    emit(gender);
+  }
 }

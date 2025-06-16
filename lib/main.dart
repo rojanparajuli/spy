@@ -69,6 +69,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => SignupToggleCubit()),
         BlocProvider(create: (_) => LoginToggleCubit()),
         BlocProvider(create: (_) => ProfileEditToggle()),
+        BlocProvider(create: (_) => GenderCubit()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
