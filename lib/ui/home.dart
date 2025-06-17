@@ -4,9 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spy/bloc/contact_sms/contact_sms_event/contact_sms/contact_sms_bloc.dart';
 import 'package:spy/bloc/contact_sms/contact_sms_event/contact_sms/contact_sms_event.dart';
+import 'package:spy/bloc/history/history_cubit.dart';
 import 'package:spy/bloc/user/user_bloc.dart';
 import 'package:spy/bloc/user/user_event.dart';
 import 'package:spy/bloc/user/user_state.dart';
+import 'package:spy/ui/change_password_screen.dart';
+import 'package:spy/ui/history_screen.dart';
 import 'package:spy/ui/user_data_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final searchController = TextEditingController();
-    final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
 
   Future<void> _handleRefresh() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -28,6 +31,18 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     await Future.delayed(const Duration(milliseconds: 500));
   }
+
+  @override
+  void initState() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      context.read<UserBloc>().add(LoadUserProfile(user.uid));
+      context.read<ContactSmsBloc>().add(LoadContactAndSms(user.uid));
+      _handleRefresh();
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -115,6 +130,23 @@ class _UserProfileState extends State<UserProfile> {
         backgroundColor: Colors.black,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChangePasswordScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.history),
+            onPressed:  () {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>HistoryScreen()));
+            },
+          ),
+        ],
       ),
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {
@@ -232,51 +264,69 @@ class _UserProfileState extends State<UserProfile> {
                           ),
                           const SizedBox(height: 12),
                           BlocBuilder<ProfileEditToggle, bool>(
-                              builder: (context, isEditing) {
-                                return BlocBuilder<GenderCubit, String>(
-                                  builder: (context, gender) {
-                                    return DropdownButtonFormField<String>(
-                                      value: gender.isEmpty ? null : gender,
-                                      decoration: InputDecoration(
-                                        labelText: 'Gender',
-                                        labelStyle: TextStyle(color: Colors.grey[400]),
-                                        prefixIcon: Icon(Icons.transgender, color: Colors.grey[400]),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.grey),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.grey),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.white),
-                                        ),
-                                        filled: true,
-                                        fillColor: isEditing ? Colors.grey[800] : Colors.grey[900],
+                            builder: (context, isEditing) {
+                              return BlocBuilder<GenderCubit, String>(
+                                builder: (context, gender) {
+                                  return DropdownButtonFormField<String>(
+                                    value: gender.isEmpty ? null : gender,
+                                    decoration: InputDecoration(
+                                      labelText: 'Gender',
+                                      labelStyle: TextStyle(
+                                        color: Colors.grey[400],
                                       ),
-                                      dropdownColor: Colors.grey[900],
-                                      style: TextStyle(color: Colors.white),
-                                      icon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
-                                      items: genderOptions.map((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
-                                      onChanged: isEditing
-                                          ? (String? newValue) {
-                                              if (newValue != null) {
-                                                context.read<GenderCubit>().setGender(newValue);
-                                              }
+                                      prefixIcon: Icon(
+                                        Icons.transgender,
+                                        color: Colors.grey[400],
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      filled: true,
+                                      fillColor: isEditing
+                                          ? Colors.grey[800]
+                                          : Colors.grey[900],
+                                    ),
+                                    dropdownColor: Colors.grey[900],
+                                    style: TextStyle(color: Colors.white),
+                                    icon: Icon(
+                                      Icons.arrow_drop_down,
+                                      color: Colors.grey[400],
+                                    ),
+                                    items: genderOptions.map((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                    onChanged: isEditing
+                                        ? (String? newValue) {
+                                            if (newValue != null) {
+                                              context
+                                                  .read<GenderCubit>()
+                                                  .setGender(newValue);
                                             }
-                                          : null,
-                                    );
-                                  },
-                                );
-                              },
-                            ),
+                                          }
+                                        : null,
+                                  );
+                                },
+                              );
+                            },
+                          ),
                           const SizedBox(height: 16),
                           BlocBuilder<ProfileEditToggle, bool>(
                             builder: (context, isEditing) {
@@ -412,15 +462,34 @@ class _UserProfileState extends State<UserProfile> {
             );
           }
 
-          return Center(
-            child: Text(
-              'Unable to load profile.',
-              style: TextStyle(color: Colors.white),
-            ),
+          return Column(
+            children: [
+              Center(
+                child: Text(
+                  'Unable to load profile.',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              Text('Please retry.'),
+              ElevatedButton(onPressed: (){
+                _handleRefresh();
+              }, child:  const Text('Retry')),
+            ],
           );
         },
       ),
     );
+  }
+
+  Future<void> _handleRefresh() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      context.read<UserBloc>().add(LoadUserProfile(user.uid));
+      context.read<ContactSmsBloc>().add(LoadContactAndSms(user.uid));
+      context.read<HistoryCubit>().fetchHistory();
+
+    }
+    await Future.delayed(const Duration(milliseconds: 500));
   }
 
   Widget _buildInfoRow(String label, String? value) {

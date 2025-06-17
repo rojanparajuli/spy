@@ -4,16 +4,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:spy/bloc/change_password/change_password_bloc.dart';
 import 'package:spy/bloc/contact_sms/contact_sms_event/contact_sms/contact_sms_bloc.dart';
 import 'package:spy/bloc/contact_sms/contact_sms_event/contact_sms/contact_sms_event.dart';
 import 'package:spy/bloc/data/data_bloc.dart';
 import 'package:spy/bloc/forget_password/forget_password_bloc.dart';
 import 'package:spy/bloc/google/google_login_bloc.dart';
+import 'package:spy/bloc/history/history_cubit.dart';
 import 'package:spy/bloc/login/login_bloc.dart';
 import 'package:spy/bloc/signup/signup_bloc.dart';
 import 'package:spy/bloc/user/user_bloc.dart';
 import 'package:spy/bloc/user/user_event.dart';
 import 'package:spy/repository/auth_repository.dart';
+import 'package:spy/repository/change_password_repository.dart';
+import 'package:spy/repository/history_repository.dart';
 import 'package:spy/ui/home.dart';
 import 'package:spy/ui/login.dart';
 import 'package:spy/ui/signup_screen.dart';
@@ -28,7 +32,7 @@ Future<void> requestAllPermissions() async {
 
   statuses.forEach((permission, status) {
     if (!status.isGranted) {
-      print('$permission not granted');
+      debugPrint('$permission not granted');
     }
   });
 }
@@ -45,6 +49,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ChangePasswordRepository authRepository = ChangePasswordRepository();
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => LoginBloc(AuthRepository(), GoogleLogin())),
@@ -65,6 +70,10 @@ class MyApp extends StatelessWidget {
             return ContactSmsBloc()..add(LoadContactAndSms(uid!));
           },
         ),
+        BlocProvider(
+          create: (_) => HistoryCubit(HistoryRepository())..fetchHistory(),
+        ),
+        BlocProvider(create: (_) => ChangePasswordBloc(authRepository)),
         BlocProvider(create: (_) => DataBloc(FirebaseFirestore.instance)),
         BlocProvider(create: (_) => SignupToggleCubit()),
         BlocProvider(create: (_) => LoginToggleCubit()),

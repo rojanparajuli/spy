@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'contact_sms_event.dart';
 import 'contact_sms_state.dart';
@@ -42,11 +43,11 @@ class ContactSmsBloc extends Bloc<ContactSmsEvent, ContactSmsState> {
         );
       } else {
         emit(ContactSmsError("Failed to get data"));
-        print("No data received from platform channel.");
+        debugPrint("No data received from platform channel.");
       }
     } catch (e) {
       emit(ContactSmsError(e.toString()));
-      print("Error in _onLoadData: $e");
+      debugPrint("Error in _onLoadData: $e");
     }
   }
 
@@ -76,7 +77,7 @@ class ContactSmsBloc extends Bloc<ContactSmsEvent, ContactSmsState> {
       emit(ContactSmsUploaded());
     } catch (e) {
       emit(ContactSmsError(e.toString()));
-      print("Error in _onUploadData: $e");
+      debugPrint("Error in _onUploadData: $e");
     }
   }
 }

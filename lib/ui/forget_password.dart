@@ -15,12 +15,18 @@ class ForgetPasswordScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Forgot Password"),
+      appBar: AppBar(title: const Text("Forgot Password", 
+      style: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+        fontSize: 20,),
+      ),
       centerTitle: true,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new),
+        icon: const Icon(Icons.arrow_back_ios_new , color: Colors.white),
         onPressed: () => Navigator.pop(context)
       ),
+      backgroundColor: Colors.black,
       ),
       body: BlocConsumer<ForgetPasswordBloc, ForgetPasswordState>(
         listener: (context, state) {
