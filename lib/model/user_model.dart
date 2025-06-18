@@ -21,6 +21,7 @@ class AppUser {
       gender: data['gender'],
       phone: data['phone'],
     );
+    // jjjj
   }
 
   Map<String, dynamic> toMap() {
