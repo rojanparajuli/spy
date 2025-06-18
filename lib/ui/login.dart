@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spy/bloc/login/login_bloc.dart';
 import 'package:spy/bloc/login/login_event.dart';
 import 'package:spy/bloc/login/login_state.dart';
+import 'package:spy/main.dart';
 import 'package:spy/ui/forget_password.dart';
-import 'package:spy/ui/home.dart';
 import 'package:spy/ui/signup_screen.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -32,7 +32,7 @@ class LoginScreen extends StatelessWidget {
             );
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              MaterialPageRoute(builder: (context) => const MyApp()),
             );
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -81,7 +81,6 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 40),
 
-                  // Email Field
                   Text(
                     'Email',
                     style: theme.textTheme.bodyMedium?.copyWith(

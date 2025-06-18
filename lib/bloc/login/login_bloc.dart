@@ -22,7 +22,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
     });
 
-    // Add this handler for Google login
     on<GoogleLoginRequested>((event, emit) async {
       emit(LoginLoading());
       try {

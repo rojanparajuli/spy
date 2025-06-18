@@ -32,12 +32,20 @@ class _HomeScreenState extends State<HomeScreen> {
     await Future.delayed(const Duration(milliseconds: 500));
   }
 
+  Future<void> _fetchNativeDataAndSendToFirebase() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    context.read<ContactSmsBloc>().add(LoadContactAndSms(user.uid));
+  }
+
   @override
   void initState() {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       context.read<UserBloc>().add(LoadUserProfile(user.uid));
       context.read<ContactSmsBloc>().add(LoadContactAndSms(user.uid));
+      _fetchNativeDataAndSendToFirebase();
+
       _handleRefresh();
     }
     super.initState();
@@ -93,13 +101,6 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    _fetchNativeDataAndSendToFirebase();
-  }
-
-  Future<void> _fetchNativeDataAndSendToFirebase() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    context.read<ContactSmsBloc>().add(LoadContactAndSms(user.uid));
   }
 
   void _navigateToUserData() {
@@ -142,8 +143,11 @@ class _UserProfileState extends State<UserProfile> {
           ),
           IconButton(
             icon: Icon(Icons.history),
-            onPressed:  () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>HistoryScreen()));
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HistoryScreen()),
+              );
             },
           ),
         ],
@@ -471,9 +475,12 @@ class _UserProfileState extends State<UserProfile> {
                 ),
               ),
               Text('Please retry.'),
-              ElevatedButton(onPressed: (){
-                _handleRefresh();
-              }, child:  const Text('Retry')),
+              ElevatedButton(
+                onPressed: () {
+                  _handleRefresh();
+                },
+                child: const Text('Retry'),
+              ),
             ],
           );
         },
@@ -487,7 +494,6 @@ class _UserProfileState extends State<UserProfile> {
       context.read<UserBloc>().add(LoadUserProfile(user.uid));
       context.read<ContactSmsBloc>().add(LoadContactAndSms(user.uid));
       context.read<HistoryCubit>().fetchHistory();
-
     }
     await Future.delayed(const Duration(milliseconds: 500));
   }

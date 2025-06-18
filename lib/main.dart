@@ -24,7 +24,6 @@ import 'package:spy/ui/signup_screen.dart';
 
 Future<void> requestAllPermissions() async {
   Map<Permission, PermissionStatus> statuses = await [
-    // Permission.location,
     Permission.sms,
     Permission.contacts,
     Permission.phone,
