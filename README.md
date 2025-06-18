@@ -1,89 +1,119 @@
-# 🕵️‍♂️ SPY
+# 🕵️‍♂️ SPY - Device Data Monitoring Tool
 
-Welcome to **SPY**, a Flutter-based surveillance tool designed for educational purposes. This app captures device data and syncs it with Firebase for analysis.
+Welcome to **SPY**, a Flutter-based surveillance application designed for educational purposes. This tool captures and analyzes device data, syncing securely with Firebase for remote monitoring.
 
-> ⚠️ **Disclaimer**: Use responsibly. This project is for learning and ethical testing only.
+> ⚠️ **Disclaimer**: This project is intended solely for educational purposes and ethical security testing. Unauthorized surveillance may violate privacy laws.
 
----
+## 📋 Table of Contents
+- [Features](#-features)
+- [Setup Guide](#-setup-guide)
+- [Screenshots](#-screenshots)
+- [Technical Stack](#-technical-stack)
+- [Support](#-support)
 
-## 🚀 Getting Started
+## ✨ Features
+- Real-time device data collection
+- Secure Firebase synchronization
+- Multi-authentication support (Google/Email)
+- Clean, intuitive user interface
+- Contact and SMS monitoring capabilities
 
-### 🔗 Clone the Repository
+## 🛠 Setup Guide
 
-```bash
+### Prerequisites
+- Flutter SDK (v3.0+)
+- Firebase account
+- Android/iOS development environment
+
+### Step 1: Firebase Configuration
+1. Create a new project at [Firebase Console](https://console.firebase.google.com/)
+2. download google-services.json and move it to android/app/
+2. Enable Authentication (Google + Email/Password)
+3. Initialize Cloud Firestore with test-mode rules:
+
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+
+### Step 2: Application Setup
 git clone https://github.com/rojanparajuli/spy.git
 cd spy
-
-🛠️ Setup Instructions
-Follow the steps below to get the app up and running:
-
-✅ Step 1: Create a Firebase Account
-Go to Firebase Console
-
-Create a new project named spy.
-
-
-🔐 Step 2: Enable Authentication
-Navigate to Authentication > Sign-in method
-
-Enable Google and Email/Password authentication methods.
-
-
-💾 Step 3: Create a Firestore Database
-Go to Cloud Firestore
-
-Click Create database and choose your location.
-
-
-🛡️ Step 4: Set Database Rules
-Set your database rules to the following (for dev/testing purposes):
-
-# js
-# Copy
-# Edit
-# rules_version = '2';
-# service cloud.firestore {
-#   match /databases/{database}/documents {
-#     match /{document=**} {
-#       allow read, write: if true;
-#     }
-#   }
-# }
-⚠️ Note: Do NOT use open rules in production.
-
-▶️ Step 5: Run the App
-Make sure your Flutter SDK is installed.
-
-bash
-Copy
-Edit
 flutter pub get
 flutter run
-☁️ Step 6: Data Syncs to Firebase
-Once the app is running, it will automatically begin sending data (contacts & SMS) to your Firebase Firestore.
+
+### Step 3: Data Monitoring
+
+Authenticate in the app
+
+View synchronized data in Firebase console
+
+Search records by User ID in the app interface
 
 
-🔍 Step 7: View Data by User ID
-Enter the user ID, and the screen will display the user's contacts and SMS data pulled from Firebase.
+
+##📸 Screenshots
+
+![Screenshot 1](assets/ss1.jpg)
+![Screenshot 2](assets/ss2.jpg)
 
 
-📷 Screenshots
-Home Screen	Firebase Auth	Firebase Database
+##⚙️ Technical Stack
+Frontend: Flutter 3.13
 
-📚 Resources
-Flutter Docs
-### 🖼️ App Screenshots
+Backend: Firebase (Authentication, Firestore)
 
-Below are sample screenshots of the app:
+State Management: Provider
 
-| Home Screen | Firebase Auth | Firebase Database |
-|-------------|--------------|------------------|
-| ![Home Screen](assets/ss1.jpg) | ![Data screen](assets/ss2.jpg)  |
+Dependencies:
 
-Write your first Flutter app
+firebase_core
 
-Firebase for Flutter
+cloud_firestore
 
-❤️ Support
-If you like this project, consider giving it a ⭐ on GitHub!
+firebase_auth
 
+permission_handler
+
+##🔒 Security Notice
+This application requires the following permissions:
+
+READ_CONTACTS
+
+READ_SMS
+
+INTERNET
+
+For production use:
+
+Implement proper Firestore security rules
+
+Add user consent dialogs
+
+Encrypt sensitive data
+
+##❤️ Support
+For questions or support:
+
+Open an issue
+
+Star ⭐ the repository if valuable
+
+
+**To use this README:**
+1. Copy the entire block above
+2. Replace placeholder image URLs with your actual screenshot links
+3. Update version numbers if needed
+4. Add any additional project-specific details
+
+For image hosting suggestions:
+1. Upload screenshots to your GitHub repo in `/assets` folder
+2. Use direct links like:
+   ```markdown
+   ![Alt Text](https://github.com/yourusername/spy/blob/main/assets/screen1.jpg?raw=true )
