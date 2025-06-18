@@ -4,6 +4,12 @@ Welcome to **SPY**, a Flutter-based surveillance application designed for educat
 
 > ⚠️ **Disclaimer**: This project is intended solely for educational purposes and ethical security testing. Unauthorized surveillance may violate privacy laws.
 
+##📸 Screenshots
+
+![Screenshot 1](assets/ss1.jpg)
+![Screenshot 2](assets/ss2.jpg)
+
+
 ## 📋 Table of Contents
 - [Features](#-features)
 - [Setup Guide](#-setup-guide)
@@ -58,10 +64,7 @@ Search records by User ID in the app interface
 
 
 
-##📸 Screenshots
 
-![Screenshot 1](assets/ss1.jpg)
-![Screenshot 2](assets/ss2.jpg)
 
 
 ##⚙️ Technical Stack
